@@ -1,0 +1,122 @@
+{
+  "date": "2025-12-23",
+  "generatedAt": "2025-12-23T03:07:57.528Z",
+  "items": [
+    {
+      "url": "https://hardware.slashdot.org/story/25/12/21/2337215/google-launches-co2-battery-plants-for-long-duration-storage-of-renewable-energy",
+      "source": "Slashdot.org",
+      "publishedAt": "2025-12-22T01:34:00Z",
+      "title": "Google Launches CO2 Battery Plants for Long-Duration Storage of Renewable Energy - Slashdot",
+      "title_ja": "Google、再生可能エネルギーの長期貯蔵用CO2バッテリープラントを発表",
+      "summary_ja": "Googleは、再生可能エネルギーの長期貯蔵ソリューションとして「Energy Dome」のCO2バッテリーを拡大すると発表しました。サルデーニャでの施設では、2,000トンの二酸化炭素がタービンを駆動し、10時間で20MWの電力を生成します。Googleはこの技術をデータセンターに導入し、2026年までに世界各地に設置する計画です。",
+      "key_points": [
+        "GoogleのCO2バッテリーは長期エネルギー貯蔵ソリューション。",
+        "施設を建設するのに5ヘクタールの平地があれば可能。",
+        "CO2バッテリーはリチウムイオンバッテリーに比べてコストが30%安いと期待されている。"
+      ],
+      "glossary": [
+        {
+          "term": "CO2バッテリー",
+          "explain_ja": "二酸化炭素を利用してエネルギーを貯蔵するシステム。特殊な地形を必要とせず、供給チェーンも確立済み。"
+        },
+        {
+          "term": "長期エネルギー貯蔵",
+          "explain_ja": "風や太陽光などの再生可能エネルギーを必要な時に使用できるように長期間貯蔵する技術。"
+        },
+        {
+          "term": "Energy Dome",
+          "explain_ja": "イタリアの企業が開発したCO2バッテリーのプロトタイプを指す。これによりエネルギー貯蔵の効率を高める。"
+        }
+      ],
+      "personal_actions": [
+        "地域での再生可能エネルギーの導入状況を調査してみる。",
+        "CO2バッテリーの技術に関する最新情報をフォローする。",
+        "地元の公共事業団体にエネルギー貯蔵プロジェクトについて問い合わせてみる。"
+      ],
+      "tags": [
+        "AI",
+        "セキュリティ"
+      ]
+    },
+    {
+      "url": "https://fortune.com/2025/12/21/solar-power-battery-storage-trump-policy-clean-energy-data-center-demand/",
+      "source": "Fortune",
+      "publishedAt": "2025-12-21T22:14:42Z",
+      "title": "Solar power and battery storage are booming despite Trump policy whiplash as clean energy meets soaring data center demand | Fortune",
+      "title_ja": "トランプ政策の影響を受けつつも太陽光発電とバッテリー貯蔵が急成長",
+      "summary_ja": "2025年はトランプ政権による汚染燃料を推進する政策と、風力・太陽光のブロックが続いた中、クリーンエネルギーにとって厳しい年となったが、電力需要の急増により進展も見られた。特に、太陽光発電とバッテリー貯蔵は急成長し、新たな電力供給の85%を占めた。未来に向けては、クリーンエネルギーの市場が拡大する見込みがある。",
+      "key_points": [
+        "トランプ政権下でのクリーンエネルギー政策の変化が急激だった。",
+        "太陽光発電とバッテリー貯蔵は高い需要に支えられ急成長。",
+        "オフショア風力は政策の停止により打撃を受けた。"
+      ],
+      "glossary": [
+        {
+          "term": "クリーンエネルギー",
+          "explain_ja": "環境に優しいエネルギー源、例えば太陽光や風力などを指します。"
+        },
+        {
+          "term": "バッテリー貯蔵",
+          "explain_ja": "発電したエネルギーを蓄えて後で利用するための技術で、安定した電力供給に重要です。"
+        },
+        {
+          "term": "連邦補助金",
+          "explain_ja": "政府から支給される資金で、クリーンエネルギー開発を助ける役割があります。"
+        }
+      ],
+      "personal_actions": [
+        "自宅のエネルギー源を見直して、再生可能エネルギーを利用できる方法を探る。",
+        "地域のクリーンエネルギー関連イベントや講座に参加して情報収集を行う。",
+        "家庭での電力効率を改善するための簡単な施策（LED照明の導入など）を検討する。"
+      ],
+      "tags": [
+        "AI",
+        "その他"
+      ]
+    },
+    {
+      "url": "https://www.digitimes.com/news/a20251219PD231/management-cooling-data-efficiency-liquid-cooling.html",
+      "source": "Digitimes",
+      "publishedAt": "2025-12-21T18:22:00Z",
+      "title": "AI servers now compete as much on heat management as on computing power",
+      "title_ja": "AIサーバーは計算力だけでなく熱管理でも競争",
+      "summary_ja": "最新のAIサーバーは、計算能力だけでなく熱管理の効率性も重要な競争要素になっています。パフォーマンス向上には冷却技術が不可欠であり、液体冷却がその解決策として注目されています。効率的な熱管理が実現すれば、データセンターの運用コスト削減やエネルギー効率の向上が期待されます。",
+      "key_points": [
+        "AIサーバーの競争は熱管理にも及ぶ",
+        "液体冷却が注目される理由",
+        "熱管理の効率化が運用コスト削減につながる"
+      ],
+      "glossary": [
+        {
+          "term": "AIサーバー",
+          "explain_ja": "人工知能処理を行うために特化したサーバー。"
+        },
+        {
+          "term": "熱管理",
+          "explain_ja": "サーバーの熱を効果的に処理し、性能を維持すること。"
+        },
+        {
+          "term": "液体冷却",
+          "explain_ja": "液体を使ってサーバーを冷却する技術で、空冷よりも効率が良い。"
+        },
+        {
+          "term": "データセンター",
+          "explain_ja": "大量のサーバーを収容し、運用する施設。"
+        },
+        {
+          "term": "エネルギー効率",
+          "explain_ja": "電力を使ってどれだけ効率的に作業を行うかの指標。"
+        }
+      ],
+      "personal_actions": [
+        "自社の冷却システムを見直す",
+        "最新の冷却技術について情報収集する",
+        "エネルギー効率を改善する方法を検討する"
+      ],
+      "tags": [
+        "DC",
+        "AI"
+      ]
+    }
+  ]
+}
