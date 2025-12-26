@@ -1,0 +1,18 @@
+動作確認（＝実際に1記事生成して、一覧も更新される）
+
+1) テーマを1件キューに入れる（記事ネタ投入）
+curl -s -X POST http://127.0.0.1:3000/api/genba/themes \
+  -H "Content-Type: application/json" \
+  -d '{"theme":"PowerShellでファイルを探す：Select-Stringの基本とよくあるミス"}'
+
+キュー確認：
+cat /opt/tshare-api/data/genba_queue.json
+
+2) 生成を手動で走らせる（systemdで生成 - タイマー関係なしに作成される）
+sudo systemctl start tshare-genba-weekly.service
+journalctl -u tshare-genba-weekly.service -n 200 --no-pager
+
+生成確認：
+ls -la /var/www/html/posts/genba/
+
+ブラウザ確認：URLでアクセス
