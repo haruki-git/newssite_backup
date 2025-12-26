@@ -1,0 +1,9 @@
+●VSCodeでアクセス
+「表示」→「コマンド パレット」 
+Remote-SSH: Open SSH Connect to Host(ホストに接続する)
+→ラズパイを選択→パスワードを入力
+→フォルダを開く
+フロントエンド：/var/www/html/ 
+バックエンド： /opt/tshare-api/
+→パスワードを入力
+→ラズパイの指定フォルダに繋がる
