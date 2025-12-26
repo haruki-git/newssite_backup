@@ -154,7 +154,6 @@ sudo systemctl reload apache2
 ### 5) サーバ情報の出しすぎを抑える（未実施）
 Apacheには `ServerTokens` / `ServerSignature` でサーバ識別情報の出し方を制御できます。
 やること（例：confを追加して有効化）
-
 ```
 sudo tee /etc/apache2/conf-available/tshare-hardening.conf >/dev/null <<'EOF'
 ServerTokens Prod
@@ -164,6 +163,12 @@ EOF
 
 sudo a2enconf tshare-hardening
 sudo systemctl reload apache2
+```
+
+Serverヘッダが“薄く”なったか確認
+期待値：Apache/2.4.xx (Debian) みたいな バージョンやOS表記が消えて、だいたい Server: Apache みたいに短くなる（ServerTokens Prod の効果
+```
+curl -sI https://t-share.duckdns.org/index.html | grep -i '^Server:'
 ```
 
 ---
