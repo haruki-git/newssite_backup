@@ -27,10 +27,10 @@ curl -s http://127.0.0.1:3000/api/health
 2,テーマキューの確認（GET）
 curl -s http://127.0.0.1:3000/api/genba/themes
 
-3,テーマを追加（POST）
+3,テーマを追加（POST）※書き換え必要
 curl -s -X POST http://127.0.0.1:3000/api/genba/themes \
   -H "Content-Type: application/json" \
-  -d '{"theme":"PowerShellでファイルを探す（Get-ChildItem / Select-String）"}'
+  -d '{"theme":"ここにテーマを記入"}'
 
 確認：
 cat /opt/tshare-api/data/genba_queue.json
@@ -41,7 +41,7 @@ sudo systemctl start tshare-genba-weekly.service
 journalctl -u tshare-genba-weekly.service -n 200 --no-pager
 ls -la /var/www/html/posts/genba/
 
-キュー空でも生成する仕様にしたなら（空にして確認）
+キュー空でも生成する仕様にしたなら（空にして確認）※現状はキューが空だと正常終了する仕様
 printf "[]\n" | sudo tee /opt/tshare-api/data/genba_queue.json >/dev/null
 sudo systemctl start tshare-genba-weekly.service
 journalctl -u tshare-genba-weekly.service -n 200 --no-pager
