@@ -11,7 +11,7 @@
 - [x] HSTS を入れる（まずは短め→問題なければ延ばす）
 - [x] 主要セキュリティヘッダを追加（OWASP推奨の系統）
 - [x] 管理系API保護（パスワード保護を採用）
-- [ ] サーバ情報の出しすぎを抑える（Serverヘッダの指紋を減らす）
+- [x] サーバ情報の出しすぎを抑える（Serverヘッダの指紋を減らす）
 - [ ] すぐに“点数化”して確認したいなら
 
 ---
@@ -153,13 +153,20 @@ sudo systemctl reload apache2
 
 ### 5) サーバ情報の出しすぎを抑える（未実施）
 Apacheには `ServerTokens` / `ServerSignature` でサーバ識別情報の出し方を制御できます。
+やること（例：confを追加して有効化）
 
 ```
+sudo tee /etc/apache2/conf-available/tshare-hardening.conf >/dev/null <<'EOF'
 ServerTokens Prod
 ServerSignature Off
+TraceEnable Off
+EOF
+
+sudo a2enconf tshare-hardening
+sudo systemctl reload apache2
 ```
 
 ---
 
-### 6) すぐに“点数化”して確認したいなら（未実施）
+### 6) “点数化”で見落とし確認（超おすすめ）
 Mozilla の HTTP Observatory にURLを入れると、HSTS/CSPなどの不足が一覧で出ます。
