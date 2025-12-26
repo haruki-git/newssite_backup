@@ -1,0 +1,32 @@
+今回の流れで「作成/修正した」と言えるファイルパスは、会話ログ上だとこのあたりです（あなたが貼ってくれた内容ベース）。
+
+API（Express側）
+  /opt/tshare-api/server.js
+    genbaThemesRouter をマウント、express.json() 重複整理、listen を1回に整理、DEBUG_ROUTES 条件ログなど。
+  /opt/tshare-api/routes/genba_themes.js
+    テーマキューAPI（GET/POST/DELETE(1件)/DELETE(全削除)）。
+  /opt/tshare-api/routes/genba.js
+    ※このスレでは中身は触ってないけど、server.js で既にマウントされてる既存ルータとして登場。
+
+バッチ/生成スクリプト（Node）
+  /opt/tshare-api/scripts/generate_genba_weekly.js
+    途中で生成が切れる問題の対策で、max_output_tokens 見直しや分割生成（final-sec-* ログ）方向の修正を入れた本体。
+  /opt/tshare-api/scripts/build_genba_index.js
+  /posts/genba/index.html を生成するやつ。
+    ここに「キュー入力/削除UI」を埋め込むように変更。
+  /opt/tshare-api/scripts/common_genba.js
+    FILES, readJson, writeJsonAtomic, nowJstIso, safeText を genba_themes.js 側で利用してる共通部品（今回のルータで参照されてた）。
+
+出力先（生成されるHTML）
+  /var/www/html/posts/genba/index.html
+    build_genba_index.js の生成物（ここにキューUIが出る）。
+  /var/www/html/posts/genba/genba_YYYY-MM-DD_XXXXXX.html
+    generate_genba_weekly.js の生成物（例：genba_2025-12-26_977144.html など）。
+
+データ（キューやキャッシュ）
+  /opt/tshare-api/data/genba_queue.json
+    テーマキュー本体（APIが読み書き、weeklyがpop）。
+  /opt/tshare-api/data/genba_skipped.json
+    重複などでスキップした履歴。
+  /opt/tshare-api/data/genba_embeddings.json
+    重複判定用embeddingキャッシュ。
