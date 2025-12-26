@@ -9,4 +9,5 @@ sudo systemctl restart tshare-api.service
 sudo systemctl status tshare-api.service --no-pager -l
 そのあと疎通：
 curl -i http://127.0.0.1:3000/api/genba/themes
+{"status":"ok","items":[]}みたいなのが返ってきたらOK
 
