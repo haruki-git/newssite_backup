@@ -1,0 +1,253 @@
+// 記事の自動生成で上書きされるので、書き換わる。ここを修正しても意味なし。
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>現場で使える(土曜日に自動生成)</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header>
+    <h1>現場で使える(土曜日に自動生成)</h1>
+    <nav>
+      <a href="/index.html">Home</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" style="margin-top:16px;">
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+    <span class="badge" id="queueCurrent">設定中のテーマ：読み込み中...</span>
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px;">
+    <input id="themeInput" class="input" style="min-width:260px; flex:1;" placeholder="例：PCの便利機能(Windows)" />
+    <button class="btn primary" id="btnAdd">追加</button>
+    <button class="btn" id="btnClear">全削除</button>
+    <button class="btn" id="btnReload">更新</button>
+  </div>
+
+  <div id="queueList" style="margin-top:10px;"></div>
+
+  <p style="margin-top:10px; opacity:.8; font-size:.9em;">
+    ※追加したテーマは、次回の自動生成で先頭から1件消費されます。
+  </p>
+</section>
+
+<script>
+(async () => {
+  const $ = (id) => document.getElementById(id);
+
+  async function fetchJson(url, opts) {
+    const res = await fetch(url, opts);
+    const ct = res.headers.get("content-type") || "";
+    const data = ct.includes("application/json") ? await res.json().catch(() => null) : await res.text().catch(() => "");
+    if (!res.ok) {
+      const msg = (data && data.message) ? data.message : (typeof data === "string" ? data : ("HTTP " + res.status));
+      throw new Error(msg);
+    }
+    return data;
+  }
+
+  function renderQueue(items) {
+    const current = items && items.length ? items[0].theme : "";
+    $("queueCurrent").textContent = "設定中のテーマ：" + (current || "(なし)");
+
+    const box = $("queueList");
+    box.innerHTML = "";
+
+    if (!items || items.length === 0) {
+      const p = document.createElement("p");
+      p.textContent = "キューは空です。";
+      box.appendChild(p);
+      return;
+    }
+
+    const ol = document.createElement("ol");
+    ol.style.margin = "0";
+    ol.style.paddingLeft = "1.2em";
+
+    items.forEach((it, idx) => {
+      const li = document.createElement("li");
+      li.style.margin = "6px 0";
+
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.gap = "8px";
+      row.style.flexWrap = "wrap";
+      row.style.alignItems = "center";
+
+      const text = document.createElement("span");
+      text.textContent = it.theme;
+
+      const meta = document.createElement("span");
+      meta.style.opacity = ".7";
+      meta.style.fontSize = ".85em";
+      meta.textContent = it.createdAtJST ? ("(" + it.createdAtJST + ")") : "";
+
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.textContent = "削除";
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        try {
+          await fetchJson("/api/genba/themes/" + encodeURIComponent(it.id), { method: "DELETE" });
+          await loadQueue();
+        } catch (e) {
+          alert("削除失敗: " + (e && e.message ? e.message : e));
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      // 先頭は「次に生成されるやつ」なので分かりやすく
+      if (idx === 0) {
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = "次に生成";
+        row.appendChild(badge);
+      }
+
+      row.appendChild(text);
+      if (meta.textContent) row.appendChild(meta);
+      row.appendChild(btn);
+
+      li.appendChild(row);
+      ol.appendChild(li);
+    });
+
+    box.appendChild(ol);
+  }
+
+  async function loadQueue() {
+    const data = await fetchJson("/api/genba/themes", { method: "GET" });
+    renderQueue(data.items || []);
+  }
+
+  $("btnReload").addEventListener("click", () => loadQueue().catch(e => alert(e.message || e)));
+
+  $("btnAdd").addEventListener("click", async () => {
+    const v = $("themeInput").value.trim();
+    if (!v) return alert("テーマを入力してください。");
+
+    $("btnAdd").disabled = true;
+    try {
+      await fetchJson("/api/genba/themes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ theme: v }),
+      });
+      $("themeInput").value = "";
+      await loadQueue();
+    } catch (e) {
+      alert("追加失敗: " + (e && e.message ? e.message : e));
+    } finally {
+      $("btnAdd").disabled = false;
+    }
+  });
+
+  $("btnClear").addEventListener("click", async () => {
+    if (!confirm("キューを全削除します。よろしいですか？")) return;
+    $("btnClear").disabled = true;
+    try {
+      await fetchJson("/api/genba/themes", { method: "DELETE" });
+      await loadQueue();
+    } catch (e) {
+      alert("全削除失敗: " + (e && e.message ? e.message : e));
+    } finally {
+      $("btnClear").disabled = false;
+    }
+  });
+
+  // 初回ロード
+  try {
+    await loadQueue();
+  } catch (e) {
+    $("queueCurrent").textContent = "設定中のテーマ：取得失敗";
+    $("queueList").textContent = "APIに繋がりませんでした: " + (e.message || e);
+  }
+})();
+</script>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;">
+  <span class="badge">並び替え</span>
+  <select id="sortArticles" class="input" style="width:auto;">
+    <option value="dateDesc">新しい順</option>
+    <option value="dateAsc">古い順</option>
+    <option value="titleAsc">タイトル A→Z</option>
+    <option value="titleDesc">タイトル Z→A</option>
+  </select>
+</div>
+
+<ul id="articleList">
+  <li data-date="2025-12-26" data-title="Windowsで仕事が速くなる実践機能集（IT初心者向け）" data-mtime="1766732479101.4463">
+    <a href="genba_2025-12-26_316785.html">Windowsで仕事が速くなる実践機能集（IT初心者向け）</a> (2025-12-26)
+  </li>
+  <li data-date="2025-12-26" data-title="Node.jsの歴史と基本 — 現場で使える最初の一歩" data-mtime="1766736647412.1191">
+    <a href="genba_2025-12-26_442223.html">Node.jsの歴史と基本 — 現場で使える最初の一歩</a> (2025-12-26)
+  </li>
+  <li data-date="2025-12-26" data-title="Windows現場で使える便利機能ガイド（IT初心者の最初の一歩）" data-mtime="1766731933169.28">
+    <a href="genba_2025-12-26_817429.html">Windows現場で使える便利機能ガイド（IT初心者の最初の一歩）</a> (2025-12-26)
+  </li>
+  <li data-date="2025-12-26" data-title="PowerShellでファイルを探す：Get-ChildItem と Select-String の現場メモ" data-mtime="1766722878090.9504">
+    <a href="genba_2025-12-26_824626.html">PowerShellでファイルを探す：Get-ChildItem と Select-String の現場メモ</a> (2025-12-26)
+  </li>
+  <li data-date="2025-12-26" data-title="JavaScriptの基本 — 現場で使える最初の一歩" data-mtime="1766735118899.4587">
+    <a href="genba_2025-12-26_989419.html">JavaScriptの基本 — 現場で使える最初の一歩</a> (2025-12-26)
+  </li>
+  <li data-date="2025-11-27" data-title="PowerShellコマンド：テキスト系ファイルの操作" data-mtime="1764201600000">
+    <a href="../win_command_file.html">PowerShellコマンド：テキスト系ファイルの操作</a> (2025-11-27)
+  </li>
+  <li data-date="2025-11-25" data-title="PowerShellコマンド：フォルダの操作" data-mtime="1764028800000">
+    <a href="../win_command.html">PowerShellコマンド：フォルダの操作</a> (2025-11-25)
+  </li>
+</ul>
+
+<script>
+(() => {
+  const sel = document.getElementById("sortArticles");
+  const list = document.getElementById("articleList");
+
+  const getDate = (li) => li.dataset.date || "";
+  const getTitle = (li) => li.dataset.title || li.textContent || "";
+  const getMtime = (li) => Number(li.dataset.mtime || 0);
+
+  function cmpDate(a, b, dir) {
+_hook: {
+    const da = getDate(a), db = getDate(b);
+    if (da && db) return dir * da.localeCompare(db); // YYYY-MM-DD なので文字比較でOK
+    if (da && !db) return -1;
+    if (!da && db) return  1;
+    return dir * (getMtime(a) - getMtime(b)); // dateが無いときはmtime
+  }
+  }
+
+  function sortAndRender(mode) {
+    const items = Array.from(list.querySelectorAll("li"));
+
+    items.sort((a, b) => {
+      switch (mode) {
+        case "dateAsc":  return cmpDate(a, b, +1);
+        case "dateDesc": return cmpDate(a, b, -1);
+        case "titleAsc": return getTitle(a).localeCompare(getTitle(b), "ja");
+        case "titleDesc": return getTitle(b).localeCompare(getTitle(a), "ja");
+        default: return 0;
+      }
+    });
+
+    const frag = document.createDocumentFragment();
+    items.forEach((li) => frag.appendChild(li)); // 既存ノードは移動する
+    list.appendChild(frag);
+  }
+
+  sel.addEventListener("change", () => sortAndRender(sel.value));
+  sortAndRender(sel.value); // 初期表示
+})();
+</script>
+  </main>
+
+  <footer>
+    <p>c 2025 hi</p>
+  </footer>
+</body>
+</html>
