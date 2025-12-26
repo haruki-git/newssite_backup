@@ -1,0 +1,12 @@
+●問題
+ターミナルで node server.js を起動しても、すでに常駐版が3000番を掴んでいて、404エラーがでる。
+--回答--
+tshare-api.service が常駐起動してます。
+このサービスが「古い状態」or「環境変数なし」で動いてるので、あなたの手動起動とは別物に当たって 404 になってました。
+1) まずサービスを再起動（変更反映）
+sudo systemctl restart tshare-api.service
+再起動できたか確認：
+sudo systemctl status tshare-api.service --no-pager -l
+そのあと疎通：
+curl -i http://127.0.0.1:3000/api/genba/themes
+
