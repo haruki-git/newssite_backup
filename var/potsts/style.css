@@ -1,0 +1,53 @@
+/* 全体の基本レイアウト設定 */
+body {
+  font-family: sans-serif;  /* ゴシック体っぽいフォントにする */
+  max-width: 800px;         /* 本文の最大幅を800pxにする */
+  margin: 0 auto;           /* 中央寄せ */
+  padding: 16px;            /* 画面端との余白 */
+  line-height: 1.6;         /* 行間を少し広めにして読みやすく */
+}
+
+/* ページ上部のヘッダー部分 */
+header {
+  border-bottom: 1px solid #ccc;  /* 下に区切りライン */
+  margin-bottom: 16px;            /* 本文との間に余白 */
+}
+
+/* ヘッダー内のタイトル */
+header h1 {
+  margin-bottom: 4px;  /* タイトルとナビの間を少し空ける */
+}
+
+
+p {
+  line-height: 1.8;  /* 段落内の行間を広めに */
+}
+
+pre {
+  background-color: #000;
+  color: #fff;
+  font-family: monospace;
+  font-size: 15px;
+  padding: 10px 10px;
+  border-radius: 4px;
+}
+
+/* ナビゲーションリンクの見た目 */
+nav a {
+  margin-right: 8px;      /* リンク同士の間隔 */
+  text-decoration: none;  /* 下線を消す */
+}
+
+/* 記事ごとの下の余白 */
+article {
+  margin-bottom: 32px;
+}
+
+/* ページ下部のフッター */
+footer {
+  border-top: 1px solid #ccc;  /* 上に区切りライン */
+  margin-top: 32px;            /* 本文との間に余白 */
+  padding-top: 8px;            /* ラインと文字の間の余白 */
+  font-size: 0.9em;            /* 少し小さい文字サイズ */
+  color: #666;                 /* 薄いグレーで控えめに */
+}
