@@ -79,15 +79,15 @@ journalctl -u tshare-genba-weekly.service -n 200 --no-pager
 ```
 
 ### ログ
-# API
+#### API
 ```bash
 journalctl -u tshare-api.service -n 200 --no-pager
 ```
-# digest
+#### digest
 ```bash
 journalctl -u tshare-digest.service -n 200 --no-pager
 ```
-# genba weekly
+#### genba weekly
 ```bash
 journalctl -u tshare-genba-weekly.service -n 200 --no-pager
 ```
