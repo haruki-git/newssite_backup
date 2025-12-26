@@ -78,10 +78,13 @@
       毎日自動更新のITニュース
     </button>
     <button class="tab-button" data-target="list-work">
-      現場で使える
+      現場で使える(土曜に自動生成)
     </button>
     <button class="tab-button" data-target="list-made">
-      その他IT技術
+      コード作成ツール
+    </button>
+    <button class="tab-button" data-target="list-intro">
+      はじめに
     </button>
   </div>
 
@@ -99,27 +102,39 @@
   <!-- ▼ 現場で使えるリスト -->
   <div id="list-work" class="article-list">
     <ul>
-      <!-- ここに「現場で使える」記事を追加していく -->
+      <!-- 手動で管理する記事（消したくないやつ） -->
+      <li><a href="posts/genba/">現場で使える（自動生成一覧）</a></li>
       <li><a href="posts/win_command_file.html">Windowsコマンド：テキスト系ファイルの操作</a> (2025-11-27)</li>
       <li><a href="posts/win_command.html">Windowsコマンド：フォルダの操作</a> (2025-11-25)</li>
-      <li><a href="posts/raspi-introduction.html">はじめに</a>(2025-11-23)
-      </li>
-      <!-- どんどん増やせる -->
+      <li><a href="posts/raspi-introduction.html">はじめに</a> (2025-11-23)</li>
+
+      <li style="margin-top:10px; opacity:.7;">--- 自動生成 ---</li>
+
+      <!-- GENBA_POSTS_START -->
+      <!-- ここから下を自動更新 -->
+      <!-- GENBA_POSTS_END -->
     </ul>
   </div>
 
-  <!-- ▼ その他IT技術記事用リスト -->
+
+  <!-- ▼ コード作成ツール -->
   <div id="list-made" class="article-list">
     <ul>
-      <!-- ここに「その他IT技術」系の記事を並べる -->
-      <li><a href="posts/raspi-wevserver.html">(作成中)自宅Webサーバ作成：ラズパイをWebサーバ化</a>(2025-11-)
-      </li>
-      <li><a href="posts/raspi-otherpc_control.html">自宅Webサーバ作成：他のPCから操作できるようにする</a>(2025-11-23)
-      </li>
-      <li><a href="posts/raspi-webserver-setup.html">自宅Webサーバ作成：ラズパイの準備と設定</a>(2025-11-23)
+      <li>
+        <a href="posts/code_tools_compare.html">翻訳 & 文章比較</a>
       </li>
     </ul>
   </div>
+
+  <!-- ▼ はじめに -->
+  <div id="list-intro" class="article-list">
+    <ul>
+      <li>
+        <a href="posts/code_tools_compare.html">翻訳 & 文章比較</a>
+      </li>
+    </ul>
+  </div>
+
 
   <footer>
     <p>c 2025 hi</p>
@@ -211,11 +226,22 @@
       btn.addEventListener("click", () => {
         const targetId = btn.dataset.target;
 
-        // ボタンの active 切り替え
+        // ★ 現場で使える は一覧ページへ遷移
+        if (targetId === "list-work") {
+          window.location.href = "/posts/genba/";
+          return;
+        }
+
+        // ★ はじめに ははじめにページへ遷移
+        if (targetId === "list-intro") {
+          window.location.href = "/posts/raspi-introduction.html";
+          return;
+        }
+
+        // それ以外は従来通りタブ切替
         document.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // リストの active 切り替え
         document.querySelectorAll(".article-list").forEach((sec) => sec.classList.remove("active"));
         const target = document.getElementById(targetId);
         if (target) target.classList.add("active");
