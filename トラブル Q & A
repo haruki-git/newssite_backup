@@ -26,3 +26,18 @@ cd /opt/tshare-api \
 && node scripts/generate_digest.js --force \
 && sudo install -m 664 -o hi -g www-data /opt/tshare-api/data/digest.json /var/www/html/data/digest.json \
 && curl -s "https://t-share.duckdns.org/data/digest.json?t=$(date +%s)" | head -n 8
+
+
+●問題
+各機能、自動更新されているか確認したい
+--回答--
+# 次回実行予定（タイマー側）
+systemctl status tshare-genba-weekly.timer --no-pager
+systemctl status tshare-digest.timer --no-pager
+
+# 直近の実行結果（サービス側）
+journalctl -u tshare-genba-weekly.service -n 80 --no-pager
+journalctl -u tshare-digest.service -n 80 --no-pager
+
+# 成果物が更新されてるか
+ls -l /var/www/html/posts/genba/index.html /var/www/html/data/digest.json
