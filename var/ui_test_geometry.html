@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>進化する幾何学アート - UI圧縮版</title>
+  <style>
+    body { 
+      background: #050505; color: white; font-family: -apple-system, sans-serif; 
+      margin: 0; overflow: hidden; position: fixed; width: 100%; height: 100%;
+      touch-action: none;
+    }
+    
+    .header { 
+      position: absolute; top: env(safe-area-inset-top); 
+      width: 100%; text-align: center; pointer-events: none; z-index: 20;
+    }
+    .header h2 { margin: 5px 0 0 0; font-size: 0.9rem; color: #00d4ff; opacity: 0.8; }
+    .header p { margin: 0; font-size: 0.65rem; opacity: 0.5; }
+
+    /* UIコンテナ：極限まで高さを抑える */
+    .ui-container { 
+      position: absolute; bottom: 0; left: 0; width: 100%; 
+      background: linear-gradient(transparent, rgba(0,0,0,0.6));
+      padding: 5px 5px calc(5px + env(safe-area-inset-bottom)) 5px;
+      box-sizing: border-box; z-index: 30;
+    }
+    
+    /* 横に詰め込むフレックス配置 */
+    .ui-row {
+      display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;
+    }
+
+    button {
+      flex: 1; /* 幅を均等に */
+      padding: 10px 2px; border: none; border-radius: 6px; cursor: pointer;
+      background: rgba(255,255,255,0.1); color: white; font-size: 11px;
+      transition: all 0.2s; backdrop-filter: blur(5px); 
+      border: 1px solid rgba(255,255,255,0.1);
+      -webkit-tap-highlight-color: transparent;
+      min-width: 0; /* 折り返し防止 */
+      white-space: nowrap;
+    }
+    
+    button:active { background: rgba(255,255,255,0.3); }
+
+    .mutate-button { background: rgba(255, 0, 119, 0.4); border-color: #ff0077; font-weight: bold; }
+    .mode-button { background: rgba(0, 150, 255, 0.2); }
+
+    canvas { display: block; touch-action: none; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h2 id="gen-text">第 1 世代</h2>
+  <p id="mode-info">立体: ON | 2Color</p>
+</div>
+
+<div class="ui-container">
+  <div class="ui-row">
+    <button onclick="evolve('complex')">複雑</button>
+    <button onclick="evolve('simple')">単純</button>
+    <button onclick="evolve('sharp')">カク</button>
+    <button onclick="evolve('round')">丸い</button>
+    <button onclick="evolve('scatter')">散乱</button>
+    <button onclick="evolve('dense')">密集</button>
+  </div>
+  
+  <div class="ui-row">
+    <button class="mode-button" onclick="evolve('3d')">立体</button>
+    <button class="mode-button" onclick="evolve('2d')">平面</button>
+    <button onclick="evolve('regular')">規則</button>
+    <button onclick="evolve('asymmetric')">非対称</button>
+    <button onclick="evolve('vivid')">鮮やか</button>
+    <button onclick="evolve('pale')">淡い</button>
+  </div>
+  
+  <div class="ui-row">
+    <button onclick="evolve('outline')">線</button>
+    <button onclick="evolve('fill')">塗り</button>
+    <button onclick="evolve('still')">静止</button>
+    <button onclick="evolve('animate')">躍動</button>
+    <button class="mutate-button" onclick="randomMutation()">突然変異</button>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<script>
+// --- ロジックは維持し、スマホでの描画範囲を最大化 ---
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let generation = 1;
+
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const wrap360 = (h) => ((h % 360) + 360) % 360;
+
+let genome = {
+  count: 60, radius: 180, hue1: 200, hue2: 300, sat: 70, light: 50,
+  opacity: 0.65, weight: 2.2, symmetry: 6, sharpness: 0.45,
+  randomness: 40, expansion: 1.2, offsetX: 0, offsetY: 0,
+  fillMode: false, rotationSpeed: 0.0, pulseSpeed: 0.0,
+  currentRotation: 0, pulsePhase: 0, depth: 1.0, offsets: []
+};
+
+function init() {
+  updateOffsets();
+  window.addEventListener('resize', resize);
+  resize();
+  animate();
+}
+
+function updateOffsets() {
+  genome.offsets = [];
+  for (let i = 0; i < 600; i++) {
+    genome.offsets.push({ x: Math.random() - 0.5, y: Math.random() - 0.5 });
+  }
+}
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  // UIが圧縮された分、アートを表示できる中心位置を少し上にずらす
+  genome.radius = Math.min(canvas.width, canvas.height) * 0.4;
+}
+
+function bumpGeneration(note = "") {
+  generation++;
+  document.getElementById('gen-text').innerText = `第 ${generation} 世代${note}`;
+}
+
+function updateHeader() {
+  const mode = genome.depth > 0.01 ? 'ON' : 'OFF';
+  document.getElementById('mode-info').innerText = `立体: ${mode} | 2Color`;
+}
+
+function evolve(direction) {
+  bumpGeneration("");
+  genome.hue1 = wrap360(genome.hue1 + (Math.random() * 12 - 6));
+  genome.hue2 = wrap360(genome.hue2 + (Math.random() * 12 - 6));
+
+  switch(direction) {
+    case 'complex':
+      genome.count = clamp(genome.count + 35, 8, 320);
+      genome.symmetry = clamp(genome.symmetry + 2, 1, 18);
+      genome.weight = clamp(genome.weight - 0.3, 0.8, 5.0);
+      genome.randomness = clamp(genome.randomness + 20, 0, 220);
+      break;
+    case 'simple':
+      genome.count = clamp(genome.count - 30, 5, 320);
+      genome.symmetry = clamp(genome.symmetry - 2, 1, 18);
+      genome.weight = clamp(genome.weight + 0.35, 0.8, 6.0);
+      genome.randomness = clamp(genome.randomness - 20, 0, 220);
+      break;
+    case 'sharp': genome.sharpness = clamp(genome.sharpness + 0.18, 0.0, 0.95); break;
+    case 'round': genome.sharpness = clamp(genome.sharpness - 0.18, 0.0, 0.95); break;
+    case 'scatter':
+      genome.randomness = clamp(genome.randomness + 45, 0, 220);
+      genome.expansion = clamp(genome.expansion + 0.10, 0.6, 2.2);
+      genome.symmetry = clamp(genome.symmetry - 1, 1, 18);
+      break;
+    case 'dense':
+      genome.randomness = clamp(genome.randomness - 45, 0, 220);
+      genome.expansion = clamp(genome.expansion - 0.18, 0.6, 2.2);
+      genome.symmetry = clamp(genome.symmetry + 1, 1, 18);
+      break;
+    case '3d': genome.depth = 1.0; break;
+    case '2d': genome.depth = 0.0; break;
+    case 'regular':
+      genome.offsetX *= 0.25; genome.offsetY *= 0.25;
+      genome.symmetry = clamp(genome.symmetry + 3, 1, 18);
+      genome.randomness = clamp(genome.randomness - 30, 0, 220);
+      break;
+    case 'asymmetric':
+      genome.offsetX = (Math.random() - 0.5) * (canvas.width * 0.4);
+      genome.offsetY = (Math.random() - 0.5) * (canvas.height * 0.2);
+      genome.symmetry = clamp(genome.symmetry - 2, 1, 18);
+      genome.randomness = clamp(genome.randomness + 25, 0, 220);
+      break;
+    case 'vivid':
+      genome.sat = clamp(genome.sat + 18, 0, 100);
+      genome.light = clamp(genome.light + 6, 25, 70);
+      genome.opacity = clamp(genome.opacity + 0.08, 0.15, 0.9);
+      break;
+    case 'pale':
+      genome.sat = clamp(genome.sat - 22, 0, 100);
+      genome.light = clamp(genome.light + 10, 25, 85);
+      genome.opacity = clamp(genome.opacity - 0.10, 0.10, 0.9);
+      break;
+    case 'outline': genome.fillMode = false; break;
+    case 'fill': genome.fillMode = true; break;
+    case 'still':
+      genome.rotationSpeed = clamp(genome.rotationSpeed - 0.020, 0.0, 0.08);
+      genome.pulseSpeed = clamp(genome.pulseSpeed - 0.015, 0.0, 0.06);
+      break;
+    case 'animate':
+      genome.rotationSpeed = clamp(genome.rotationSpeed + 0.020, 0.0, 0.08);
+      genome.pulseSpeed = clamp(genome.pulseSpeed + 0.015, 0.0, 0.06);
+      break;
+  }
+  updateHeader();
+  updateOffsets();
+}
+
+function randomMutation() {
+  bumpGeneration(" (突変!)");
+  genome.hue1 = Math.random() * 360;
+  genome.hue2 = wrap360(genome.hue1 + 90 + Math.random() * 180);
+  genome.count = Math.floor(Math.random() * 120) + 10;
+  genome.symmetry = Math.floor(Math.random() * 10) + 1;
+  genome.sharpness = clamp(Math.random() * 0.95, 0.0, 0.95);
+  genome.randomness = Math.floor(Math.random() * 120);
+  genome.expansion = clamp(0.7 + Math.random() * 1.3, 0.6, 2.0);
+  genome.sat = Math.floor(40 + Math.random() * 60);
+  genome.light = Math.floor(35 + Math.random() * 30);
+  genome.opacity = clamp(0.4 + Math.random() * 0.4, 0.1, 0.9);
+  genome.rotationSpeed = 0; genome.pulseSpeed = 0; genome.currentRotation = 0; genome.pulsePhase = 0;
+  genome.depth = Math.random() < 0.6 ? 1.0 : 0.0;
+  updateHeader();
+  updateOffsets();
+}
+
+function draw() {
+  ctx.fillStyle = '#050505';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const cx = canvas.width / 2 + genome.offsetX;
+  const cy = canvas.height / 2 + genome.offsetY;
+  const pulse = genome.pulseSpeed > 0 ? (1 + Math.sin(genome.pulsePhase) * 0.06) : 1;
+  const exp = clamp(genome.expansion * pulse, 0.6, 2.2);
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(genome.currentRotation);
+
+  if (genome.depth > 0.01) {
+    ctx.scale(1.0, 1.0 - 0.06 * genome.depth);
+  }
+
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  for (let i = 0; i < genome.symmetry; i++) {
+    if (genome.symmetry > 1) ctx.rotate((Math.PI * 2) / genome.symmetry);
+
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, genome.radius * 2 * exp);
+    const color1 = `hsla(${genome.hue1}, ${genome.sat}%, ${genome.light}%, ${genome.opacity})`;
+    const color2 = `hsla(${genome.hue2}, ${genome.sat}%, ${genome.light}%, ${genome.opacity})`;
+    grad.addColorStop(0, color1);
+    grad.addColorStop(1, color2);
+
+    if (genome.depth > 0.01) {
+      ctx.shadowBlur = 25 * genome.depth;
+      ctx.shadowColor = color1;
+    }
+
+    if (genome.fillMode) { ctx.fillStyle = grad; } 
+    else { ctx.strokeStyle = grad; ctx.lineWidth = genome.weight; }
+
+    ctx.beginPath();
+    let points = [];
+    for (let j = 0; j < genome.count; j++) {
+      const angle = j * 0.2;
+      let rBase = (j / genome.count) * genome.radius * exp;
+      if (genome.depth > 0.01) {
+        rBase *= (1 + Math.sin(j * 0.15 + genome.currentRotation * 5) * 0.08);
+      }
+      const r = (j % 2 === 0) ? rBase : rBase * (1 - genome.sharpness);
+      const rx = genome.offsets[j].x * genome.randomness;
+      const ry = genome.offsets[j].y * genome.randomness;
+      points.push({ x: Math.cos(angle) * r + rx, y: Math.sin(angle) * r + ry });
+    }
+
+    if (points.length > 2) {
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let j = 1; j < points.length - 1; j++) {
+        const xc = (points[j].x + points[j + 1].x) / 2;
+        const yc = (points[j].y + points[j + 1].y) / 2;
+        ctx.quadraticCurveTo(points[j].x, points[j].y, xc, yc);
+      }
+    }
+    if (genome.fillMode) { ctx.closePath(); ctx.fill(); } else { ctx.stroke(); }
+  }
+  ctx.restore();
+}
+
+function animate() {
+  if (genome.rotationSpeed > 0) genome.currentRotation += genome.rotationSpeed * 0.2;
+  if (genome.pulseSpeed > 0) genome.pulsePhase += genome.pulseSpeed;
+  draw();
+  requestAnimationFrame(animate);
+}
+
+init();
+</script>
+</body>
+</html>
