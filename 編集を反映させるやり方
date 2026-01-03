@@ -1,0 +1,11 @@
+■ ラズパイで編集→Pagesへ公開の仕方
+同期スクリプトを使います。
+いつも通り /var/www/html を編集
+これを実行：
+/usr/local/bin/tshare-pages-sync.sh
+
+※変更があれば git add -A → commit → push までやってくれます
+※push されたら Pages が自動反映されます
+
+■ 反映されたかの確認
+curl -sI https://tshare-site.pages.dev/ | head
